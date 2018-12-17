@@ -158,7 +158,7 @@ class NewsNLUAnalyzer(object):
         except Exception as e:
             log.error(e)
         else:
-            print(json.dumps(response, indent=2))
+            # print(json.dumps(response, indent=2))
             return response
 
     @staticmethod
