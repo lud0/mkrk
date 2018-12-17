@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+
+<!--<nav class="mr-navbar-primary navbar navbar-inverse navbar-fixed-top js-navbar-primary" role="navigation">-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container">
+
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarTogglerDemo01">
+    <a class="navbar-brand" href="#">MKRK</a>
+    <ul class="navbar-nav mr-auto mt-2 mt-lg-0">
+      <li class="nav-item">
+        <a class="nav-link" href="{%url 'news' %}">News</a>
+      </li>
+      <li class="nav-item active">
+        <a class="nav-link" href="{%url 'trends' %}">Trends</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link" href="{%url 'settings' %}">Settings</a>
+      </li>
+    </ul>
+      <a href="{% url 'logout' %}" class="btn btn-secondary my-sm-0">Logout</a>
+  </div>
+  </div>
+</nav>
+
+
+<div class="container">
+
+  <div class="row">
+      <div class="col-sm-12 my-5">
+        <div id="trends">
+          <canvas id="myChart" width="700" height="400"></canvas>
+        </div>
+      </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block more_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.min.js"></script>
+<script type="text/javascript">
+var ctx = document.getElementById("myChart");
+var timeFormat = 'YYYY-MM-DD';
+var color = ['#ff6384', '#36a2eb', '#8e5ea2'];
+var myLineChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+				datasets: [
+				{% for kw, values in trends.items %}
+                    {
+					label: '{{kw}}',
+					backgroundColor: color[{{forloop.counter0}}%color.length],
+					data: [
+					{% for xvalue, yvalue in values %}
+					  {x: '{{xvalue}}', y:{{yvalue}} },
+					{% endfor %}
+					]
+					},
+				{% endfor %}
+                ]
+            },
+    options: {
+				responsive: true,
+				title: {
+					display: true,
+					text: 'Target keywords score trend'
+				},
+				hover: {
+					mode: 'nearest',
+					intersect: true
+				},
+				scales: {
+					xAxes: [{
+						type: 'time',
+						time: {
+							format: timeFormat,
+							// round: 'day'
+							tooltipFormat: 'll HH:mm',
+							unit: 'day',
+                            unitStepSize: 1,
+                            displayFormats: {
+                               'day': 'MMM DD'
+                            }
+						},
+						scaleLabel: {
+							display: true,
+							labelString: 'Date'
+						}
+					}],
+					yAxes: [{
+						display: true,
+						scaleLabel: {
+							display: true,
+							labelString: 'Sentiment score'
+						}
+					}]
+				}
+			}
+});
+</script>
+{% endblock %}

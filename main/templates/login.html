@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+  <div class="row">
+    <div class="col-sm">
+        <div class="jumbotron my-5">
+          <h1 class="display-4">Welcome to MkRk!</h1>
+          <p class="lead">Please login to proceed</p>
+            <form action="" method="POST">
+              {% csrf_token %}
+                <div class="row">
+                  <div class="col-sm-5 col-sm-offset-1">
+                    <div class="form-group">
+                      <label for="username">Username</label>
+                      <input type="text" class="form-control" name="username" id="username" placeholder="Enter username">
+                    </div>
+                    <div class="form-group">
+                      <label for="password">Password</label>
+                      <input type="password" class="form-control" name="password" id="password" placeholder="Password">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Login</button> {{message}}
+                    </div>
+                </div>
+            </form>
+          <div>
+            <p style="position:absolute;bottom:5px;right:15px">Powered by <a href="https://newsapi.org">NewsAPI</a></p>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>
+
+<div>
+</div>
+{% endblock %}
+
+{% block more_js %}
+{% endblock %}
