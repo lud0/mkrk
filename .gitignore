@@ -1,2 +1,6 @@
 *.pyc
+staticfiles
 *.swp
+.env
+.idea
+celerybeat-schedule.db
