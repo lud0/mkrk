@@ -2,6 +2,7 @@ import logging
 from datetime import datetime, timedelta
 
 from celery import shared_task
+from django.db.models import Q
 from django.utils import timezone
 
 from main.fetchers import NewsAPIScraper, NewsNLUAnalyzer
@@ -19,7 +20,7 @@ def scrape_and_analyze_news_task():
     Loop over all the target keywords that need to be refreshed and submit the scraping task
     """
     now = timezone.now()
-    expired_targets = Target.objects.filter(expired_at__lte=now)
+    expired_targets = Target.objects.filter(Q(expired_at__isnull=True) | Q(expired_at__lte=now))
     log.debug("start scrape and analyze task for %d expired keywords" % len(expired_targets))
 
     for target in expired_targets:
