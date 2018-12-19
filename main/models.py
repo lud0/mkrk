@@ -8,7 +8,6 @@ from django.dispatch.dispatcher import receiver
 
 
 class Article(models.Model):
-
     url = models.URLField(max_length=1024)
     title = models.CharField(max_length=1024)
     snippet = models.TextField(null=True)
@@ -21,11 +20,12 @@ class Article(models.Model):
     """
     sentiment_data structure:
     { 'reports': [{
-                  'created_at': 2018-12-15T14:45:55.448043,  # ISO-8601 UTC 
+                  'created_at': 2018-12-15T14:45:55.448043,  # ISO-8601 UTC
                   'target_keyword': 'Google',
                   'target_keyword_score': 0.35,
                   'global_score': 0.67,
-                  'article_keywords_scores': [('keyword1', 0.45),('keyword2', 0.23)..]
+                  'article_keywords_scores': [('keyword1', 0.45),
+                                              ('keyword2', 0.23)..]
                   },
                   ...
                  ]
@@ -34,7 +34,7 @@ class Article(models.Model):
     sentiment_data = JSONField(null=True)
 
     class Meta:
-        ordering = ('-published_at', )
+        ordering = ('-published_at',)
 
     def __str__(self):
         return 'ART%d:%s' % (self.id, self.uid)
@@ -42,7 +42,8 @@ class Article(models.Model):
     def __init__(self, *args, **kwargs):
         """
         Ensures that the article has the UID set.
-        The UID is an hash of the url+title+published_at so it is easy to prevent duplicates
+        The UID is an hash of the url+title+published_at so it is easy
+        to prevent duplicates
         """
         super(Article, self).__init__(*args, **kwargs)
         if not self.uid:
@@ -66,8 +67,8 @@ class Article(models.Model):
     @staticmethod
     def get_score_data(queryset):
         """
-        Returns a dict of keyword targets and their (date, score) list of data points using
-        the first report of the queryset
+        Returns a dict of keyword targets and their (date, score) list of
+        data points using the first report of the queryset
         """
         scores = queryset.values_list('published_at',
                                       'sentiment_data__reports__0__target_keyword',
@@ -86,22 +87,25 @@ class Article(models.Model):
     @classmethod
     def get_score_averages(cls, queryset):
         """
-        Returns the (average score, number of data points) for each target keyword
+        Returns the (average score, number of data points) for each
+        target keyword
         """
 
         scores = cls.get_score_data(queryset)
         averages = {}
         for kw, values in scores.items():
-            averages[kw] = (sum([score for _, score in values]) / len(values), len(values))
+            averages[kw] = (sum([score for _, score in values]) / len(values),
+                            len(values))
 
         return averages
 
 
 class Target(models.Model):
-
     keyword = models.CharField(max_length=50)
     active = models.BooleanField(default=True)
-    refresh_frequency = models.IntegerField(default=2, help_text='minimum number of hours between refreshes')
+    refresh_frequency = models.IntegerField(default=2,
+                                            help_text='minimum number of hours '
+                                                      'between refreshes')
     expired_at = models.DateTimeField(null=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -110,9 +114,10 @@ class Target(models.Model):
 
 
 class UserTarget(models.Model):
-
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='my_targets')
-    target_keyword = models.ForeignKey(Target, on_delete=models.CASCADE, related_name='users')
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='my_targets')
+    target_keyword = models.ForeignKey(Target, on_delete=models.CASCADE,
+                                       related_name='users')
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -122,7 +127,8 @@ class UserTarget(models.Model):
 @receiver(post_save, sender=Target)
 def submit_scraper_for_new_target(sender, instance, created, *args, **kwargs):
     """
-    Signal to automatically submit a scrape task for the new keyword and fetch the historic articles
+    Signal to automatically submit a scrape task for the new keyword and
+    fetch the historic articles
     """
     from main.tasks import scrape_historic_news_task
 

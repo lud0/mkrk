@@ -14,6 +14,7 @@ urlpatterns = [
     path('dashboard/settings', views.settings_page, name='settings'),
 
     # AJAX API endpoints
-    path('api/v1/usertarget', api.APIUserTarget.as_view(), name='api_usertarget'),
+    path('api/v1/usertarget', api.APIUserTarget.as_view(),
+         name='api_usertarget'),
     path('api/v1/article', api.APIArticle.as_view(), name='api_article'),
 ]

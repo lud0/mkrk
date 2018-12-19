@@ -1,13 +1,14 @@
-import json
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from django.conf import settings
 from newsapi import NewsApiClient
 from url_normalize import url_normalize
 from watson_developer_cloud import NaturalLanguageUnderstandingV1
 from watson_developer_cloud import WatsonApiException
-from watson_developer_cloud.natural_language_understanding_v1 import Features, SentimentOptions, KeywordsOptions
+from watson_developer_cloud.natural_language_understanding_v1 import Features
+from watson_developer_cloud.natural_language_understanding_v1 import KeywordsOptions
+from watson_developer_cloud.natural_language_understanding_v1 import SentimentOptions
 
 from main.models import Article
 
@@ -17,12 +18,14 @@ log = logging.getLogger(__name__)
 class NewsAPIScraper(object):
     """
     News API scraper class for the service https://newsapi.org/
-    Check the documentation at https://newsapi.org/docs for all the parameters available
+    Check the documentation at https://newsapi.org/docs for all the
+    parameters available
     """
 
     def __init__(self):
         self.api_client = NewsApiClient(api_key=settings.NEWSAPIORG_APIKEY)
-        self.default_params = (('sources', 'cnn,bbc-news,business-insider,ars-technica,techcrunch'),
+        self.default_params = (('sources', 'cnn,bbc-news,business-insider,'
+                                           'ars-technica,techcrunch'),
                                ('language', 'en'),
                                ('page_size', 100),
                                )
@@ -30,7 +33,8 @@ class NewsAPIScraper(object):
     def fetch_and_store(self, query=None, upto_date=None):
         """
         Method to call to fetch the news article and store them in the db.
-        If upto_date is given, then fetch the articles up to that date, otherwise only fetches the latest headlines
+        If upto_date is given, then fetch the articles up to that date,
+        otherwise only fetches the latest headlines
         """
         if upto_date:
             raw_articles = self._get_all_news(upto_date, query=query)
@@ -42,8 +46,8 @@ class NewsAPIScraper(object):
 
     def _get_headline_news(self, query=None):
         """
-        Fetch the latest headlines news using the default params and the given query
-        refer to https://newsapi.org/docs for the available parameters
+        Fetch the latest headlines news using the default params and the given
+        query refer to https://newsapi.org/docs for the available parameters
         """
         params = dict(self.default_params)
         if query:
@@ -59,7 +63,8 @@ class NewsAPIScraper(object):
 
     def _get_all_news(self, upto_date, query=None):
         """
-        Fetch the all the articles up to upto_date using the default params and the given query
+        Fetch the all the articles up to upto_date using the default params
+        and the given query
         refer to https://newsapi.org/docs for the available parameters
         """
         params = dict(self.default_params)
@@ -89,13 +94,15 @@ class NewsAPIScraper(object):
             if not url or not title or not source:
                 continue
             try:
-                published_at = datetime.strptime(entry['publishedAt'][:19], '%Y-%m-%dT%H:%M:%S')
+                published_at = datetime.strptime(entry['publishedAt'][:19],
+                                                 '%Y-%m-%dT%H:%M:%S')
             except Exception as e:
                 log.error(e)
                 continue
             snippet = entry.get('content', None)
 
-            article = Article(url=url, title=title, snippet=snippet, source=source, published_at=published_at)
+            article = Article(url=url, title=title, snippet=snippet,
+                              source=source, published_at=published_at)
             result[article.uid] = article
 
         return result
@@ -106,7 +113,8 @@ class NewsAPIScraper(object):
             return
 
         uids_to_check = parsed_articles.keys()
-        uids_existing = Article.objects.filter(uid__in=uids_to_check).values_list('uid', flat=True)
+        uids_existing = Article.objects.filter(uid__in=uids_to_check)\
+            .values_list('uid', flat=True)
         uids_new = set(uids_to_check) - set(uids_existing)
 
         new_articles = [parsed_articles[uid] for uid in uids_new]
@@ -120,7 +128,8 @@ class NewsAPIScraper(object):
 class NewsNLUAnalyzer(object):
     """
     IBM Natural Language Understanding analayzer class
-    Check the documentation at https://cloud.ibm.com/apidocs/natural-language-understanding
+    Check the documentation at
+    https://cloud.ibm.com/apidocs/natural-language-understanding
     for all the features and parameters available
     """
 
@@ -148,13 +157,16 @@ class NewsNLUAnalyzer(object):
         if query:
             sentiment_params['targets'] = [query]
 
-        params['features'] = Features(keywords=KeywordsOptions(sentiment=True, emotion=False, limit=5),
+        params['features'] = Features(keywords=KeywordsOptions(sentiment=True,
+                                                               emotion=False,
+                                                               limit=5),
                                       sentiment=SentimentOptions(**sentiment_params))
 
         try:
             response = self.api_client.analyze(**params).get_result()
         except WatsonApiException as ex:
-            log.error("Method failed with status code " + str(ex.code) + ": " + ex.message)
+            log.error("Method failed with status code " +
+                      str(ex.code) + ": " + ex.message)
         except Exception as e:
             log.error(e)
         else:
@@ -207,14 +219,16 @@ class NewsNLUAnalyzer(object):
         """
         sentiment_data = {}
         try:
-            sentiment_data['global_score'] = float(response['sentiment']['document']['score'])
+            sentiment_data['global_score'] = float(response['sentiment']
+                                                   ['document']['score'])
         except KeyError:
             pass
         except Exception as e:
             log.error('%s %s' % (e, response))
 
         try:
-            sentiment_data['target_keyword_score'] = float(response['sentiment']['targets'][0]['score'])
+            sentiment_data['target_keyword_score'] = float(response['sentiment']
+                                                           ['targets'][0]['score'])
         except KeyError:
             pass
         except Exception as e:

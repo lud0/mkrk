@@ -33,17 +33,22 @@ def logout_page(request):
 @login_required(login_url='login')
 def news_page(request):
 
-    user_keywords = list(request.user.my_targets.all().values_list('target_keyword__keyword', flat=True))
-    user_articles = Article.objects.filter(sentiment_data__reports__0__target_keyword__in=user_keywords)[:100]
+    user_keywords = list(request.user.my_targets.all().values_list(
+        'target_keyword__keyword', flat=True))
+    user_articles = Article.objects.filter(
+        sentiment_data__reports__0__target_keyword__in=user_keywords)[:100]
     stats = Article.get_score_averages(user_articles)
 
-    return render(request, 'news.html', {'articles': user_articles, 'stats': stats})
+    return render(request, 'news.html', {'articles': user_articles,
+                                         'stats': stats})
 
 
 @login_required(login_url='login')
 def trends_page(request):
-    user_keywords = list(request.user.my_targets.all().values_list('target_keyword__keyword', flat=True))
-    user_articles = Article.objects.filter(sentiment_data__reports__0__target_keyword__in=user_keywords)[:100]
+    user_keywords = list(request.user.my_targets.all().values_list(
+        'target_keyword__keyword', flat=True))
+    user_articles = Article.objects.filter(
+        sentiment_data__reports__0__target_keyword__in=user_keywords)[:100]
     kw_score_timeseries = Article.get_score_data(user_articles)
 
     trends = {}
@@ -56,4 +61,3 @@ def trends_page(request):
 def settings_page(request):
 
     return render(request, 'settings.html')
-

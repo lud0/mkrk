@@ -10,24 +10,23 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/2.1/ref/settings/
 """
 
-import os, dj_database_url
+import dj_database_url
+import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.1/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ.get('SECRET_KEY', 'sdd98yuhj:DSF32enw.sd,mdsd8r3eqdedjedh8')
-
+SECRET_KEY = os.environ.get('SECRET_KEY',
+                            'sdd98yuhj:DSF32enw.sd,mdsd8r3eqdedjedh8')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False
 
 ALLOWED_HOSTS = ['*']
-
 
 # Application definition
 
@@ -94,27 +93,29 @@ CSRF_USE_SESSIONS = True
 # https://docs.djangoproject.com/en/2.1/ref/settings/#databases
 
 DATABASES = {
-    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'), conn_max_age=600),
+    'default': dj_database_url.parse(os.environ.get('DATABASE_URL'),
+                                     conn_max_age=600),
 }
-
-
-
 
 # Password validation
 # https://docs.djangoproject.com/en/2.1/ref/settings/#auth-password-validators
 
 AUTH_PASSWORD_VALIDATORS = [
     {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'UserAttributeSimilarityValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'MinimumLengthValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'CommonPasswordValidator',
     },
     {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
+        'NAME': 'django.contrib.auth.password_validation.'
+                'NumericPasswordValidator',
     },
 ]
 
@@ -127,7 +128,8 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'standard': {
-            'format': "[%(asctime)s] %(levelname)s [%(name)s:%(lineno)s] %(message)s",
+            'format': "[%(asctime)s] %(levelname)s "
+                      "[%(name)s:%(lineno)s] %(message)s",
             'datefmt': "%Y-%m-%d %H:%M:%S"
         },
         'short': {
@@ -177,7 +179,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.1/howto/static-files/
 PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
@@ -189,21 +190,22 @@ CELERY_TIMEZONE = TIME_ZONE
 CELERY_TASK_IGNORE_RESULT = True
 CELERY_TASK_ACKS_LATE = True
 CELERY_WORKER_LOG_FORMAT = "[%(asctime)s: %(levelname)s] %(message)s"
-CELERY_WORKER_TASK_LOG_FORMAT = "[%(asctime)s: %(levelname)s] [%(task_name)s] %(message)s"
+CELERY_WORKER_TASK_LOG_FORMAT = "[%(asctime)s: %(levelname)s] " \
+                                "[%(task_name)s] %(message)s"
 CELERY_BROKER_URL = os.environ.get('CLOUDAMQP_URL', None)
 if CELERY_BROKER_URL:
-    CELERY_RESULT_BACKEND = CELERY_BROKER_URL
     # recommended settings for cloudampq
     CELERY_BROKER_POOL_LIMIT = 1
-    CELERY_BROKER_HEARTBEAT = None # We're using TCP keep-alive instead
-    CELERY_BROKER_CONNECTION_TIMEOUT = 30 # May require a long timeout due to Linux DNS timeouts etc
-    CELERY_RESULT_BACKEND = None # AMQP is not recommended as result backend as it creates thousands of queues
-    CELERY_EVENT_QUEUE_EXPIRES = 60 # Will delete all celeryev. queues without consumers after 1 minute.
-    CELERY_WORKER_PREFETCH_MULTIPLIER = 1 # Disable prefetching, it's causes problems and doesn't help performance
-
+    CELERY_BROKER_HEARTBEAT = None  # We're using TCP keep-alive instead
+    # May require a long timeout due to Linux DNS timeouts etc
+    CELERY_BROKER_CONNECTION_TIMEOUT = 30
+    # AMQP not recommended as result backend as it creates thousands of queues
+    CELERY_RESULT_BACKEND = None
+    # Will delete all celeryev. queues without consumers after 1 minute.
+    CELERY_EVENT_QUEUE_EXPIRES = 60
+    # Disable prefetching, it's causes problems and doesn't help performance
+    CELERY_WORKER_PREFETCH_MULTIPLIER = 1
 
 IBM_NLU_APIKEY = os.getenv('IBM_NLU_APIKEY', None)
 IBM_NLU_URL = os.getenv('IBM_NLU_URL', None)
 NEWSAPIORG_APIKEY = os.getenv('NEWSAPIORG_APIKEY', None)
-
-

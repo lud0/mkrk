@@ -18,15 +18,18 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Article',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('url', models.URLField(max_length=1024)),
                 ('title', models.CharField(max_length=1024)),
                 ('snippet', models.TextField(null=True)),
                 ('source', models.CharField(max_length=1024)),
                 ('published_at', models.DateTimeField()),
-                ('uid', models.CharField(db_index=True, max_length=256, unique=True)),
+                ('uid', models.CharField(db_index=True, max_length=256,
+                                         unique=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('sentiment_data', django.contrib.postgres.fields.jsonb.JSONField(null=True)),
+                ('sentiment_data', django.contrib.postgres.fields.
+                 jsonb.JSONField(null=True)),
             ],
             options={
                 'ordering': ('-published_at',),
@@ -35,10 +38,13 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='Target',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('keyword', models.CharField(max_length=50)),
                 ('active', models.BooleanField(default=True)),
-                ('refresh_frequency', models.IntegerField(default=2, help_text='minimum number of hours between refreshes')),
+                ('refresh_frequency', models.IntegerField(
+                    default=2,
+                    help_text='minimum number of hours between refreshes')),
                 ('expired_at', models.DateTimeField(null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
             ],
@@ -46,10 +52,16 @@ class Migration(migrations.Migration):
         migrations.CreateModel(
             name='UserTarget',
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('id', models.AutoField(auto_created=True, primary_key=True,
+                                        serialize=False, verbose_name='ID')),
                 ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('target_keyword', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='users', to='main.Target')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='my_targets', to=settings.AUTH_USER_MODEL)),
+                ('target_keyword', models.ForeignKey(
+                    on_delete=django.db.models.deletion.CASCADE,
+                    related_name='users', to='main.Target')),
+                ('user', models.ForeignKey(on_delete=django.db.models
+                                           .deletion.CASCADE,
+                                           related_name='my_targets',
+                                           to=settings.AUTH_USER_MODEL)),
             ],
         ),
         migrations.AlterUniqueTogether(

@@ -3,7 +3,8 @@ import pandas as pd
 
 def resample_timeseries(data):
     """
-    Function to resample timeseries data wich outputs 1 day data point using the average value of the day
+    Function to resample timeseries data wich outputs 1 day data point using
+    the average value of the day
     :param data: list of tuples (date, score)
     :return: list of tuples (date, score)
     """
