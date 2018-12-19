@@ -12,7 +12,7 @@ News scraping web app with sentiment analysis - concept exercise
     - NewsAPI API client wrapper (newsapi)
     - IBM NLU API client wrapper (watson-developer-cloud)
     
-- SQL database
+- PostgreSQL database (for the native support of the JSONField)
 - a message broker for Celery (e.g. RabbitMQ)
 
 ## Prerequisites
